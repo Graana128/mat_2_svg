@@ -149,3 +149,28 @@ def is_point_inside_rectangle(point, upper_left, bottom_right):
     br_x, br_y = bottom_right
 
     return ul_x <= x <= br_x and ul_y <= y <= br_y
+
+
+
+
+
+
+# The provided code includes a series of functions to support the placement and orientation of objects within a room based on wall and door positions. Here's a detailed summary of each function and its purpose:
+
+# The `get_wall_index` function identifies the index of a wall within a room that aligns with the static and dynamic properties of the provided objects. It can return the first matching wall index or, if specified, the wall index corresponding to the largest object. It checks each wall's direction and compares it with the object's direction to find the appropriate wall.
+
+# The `get_wall_indices` function determines the indices of walls relative to a given door. It calculates the indices for the door wall, front wall, left wall, and right wall by finding the door's wall index and adjusting accordingly. This helps in identifying the spatial relationship between walls and the door.
+
+# The `point_in_polygon` function checks if a given point lies within a specified polygon using the Shapely library. This utility function is essential for verifying whether an object placement is valid within the room's boundaries.
+
+# The `find_direction` function determines the direction (North, South, East, or West) of a wall based on its position relative to the polygon representing the room. It identifies the wall's center and checks adjacent points to determine if the wall is on the left (West), right (East), above (North), or below (South) within the polygon.
+
+# The `calculate_distance` function computes the Euclidean distance between two points. This is useful for determining the proximity of objects to walls or other elements within the room.
+
+# The `change_orientation` function calculates the rotation angle needed to align an object's current direction with the desired direction. It uses a mapping of direction changes to corresponding rotation angles, ensuring objects are correctly oriented.
+
+# The `isValidPoint` function checks if a set of points (representing an object's placement) is valid within the room and not overlapping with used spaces. It ensures the points are within the room's polygon and not within any preoccupied space, maintaining proper placement without collision.
+
+# Lastly, the `is_point_inside_rectangle` function (incomplete in the snippet) presumably checks if a point lies within a defined rectangular area, supporting collision detection and valid placement checks for objects.
+
+# Together, these functions facilitate the accurate placement, orientation, and validation of objects (like furniture) within a room, ensuring they align with walls, doors, and other room elements while avoiding overlaps and maintaining spatial relationships.
