@@ -1,0 +1,7 @@
+scipy
+uvicorn
+fastapi
+svgwrite
+numpy
+matplotlib
+shapely
