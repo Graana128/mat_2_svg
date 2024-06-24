@@ -14,7 +14,7 @@ def get_coffetable_position(cx, cy, desired_direction, obj_dim):
         x = cx + obj_dim[0]
         y = cy - obj_dim[1]//4
     else:  # West
-        x = cx - obj_dim[0]
+        x = cx - obj_dim[0] - 25
         y = cy - obj_dim[1]
 
     return x, y

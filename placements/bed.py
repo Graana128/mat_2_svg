@@ -24,6 +24,12 @@ def get_bed_position(cx, cy, desired_direction, obj_dim):
 def place_bed(image, start_point, dim, rotation, used_space):
     x, y = start_point
 
+    print(rotation)
+    if rotation==90:
+        x += 10
+    elif rotation==270:
+        x -= 10
+
     g = Group()
 
     img = image.image(href="asset_data/bed.svg", insert=(x, y), size=(f"{dim[0]}px", f"{dim[1]}px"))
@@ -36,7 +42,7 @@ def place_bed(image, start_point, dim, rotation, used_space):
     g.add(img)
     image.add(g)
 
-    used_space.append([[x+y], [x+dim[0], y+dim[1]]])
+    used_space.append([[x,y], [x+dim[0], y+dim[1]]])
 
 def bed_asset_placement(image, room, data, used_space):
     windows_indices = get_object_indices(room, data["windows"], isMultiple=True)
@@ -49,7 +55,7 @@ def bed_asset_placement(image, room, data, used_space):
         rotation = change_orientation(bed_direction, wall_direction)
 
         cx, cy = window[1:3]
-        dim = [70, 90] if not wall_direction in ["East", "West"] else [90, 70]
+        dim = [90, 70]
         x, y = get_bed_position(cx, cy, wall_direction, dim)
 
         points = [[x, y], [x, y+dim[1]], [x+dim[0], y], [x+dim[0], y+dim[1]]]

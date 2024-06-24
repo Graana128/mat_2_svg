@@ -98,21 +98,61 @@ class FloorplanGenerator:
             else:
                 continue
 
+    # def draw_door_edges(self, room_to_doors, exterior_walls):
+    #     for key, indices in room_to_doors.items():
+    #         room_type = self.data["types"][key]
+
+    #         door = self.data["doors"][indices[0]]
+    #         start_point = door[1:3]
+    #         end_point = [door[1]+door[3], door[2]+door[4]]
+
+    #         door_edge_color = svgwrite.rgb(*monochrome_colors[room_type])
+    #         self.image.add(self.image.line(start=tuple(map(int, start_point)), end=tuple(map(int, end_point)), stroke=door_edge_color, stroke_width=9))
+
+    #     start_point = exterior_walls[0][0]
+    #     end_point = exterior_walls[0][1]
+    #     color = svgwrite.rgb(*monochrome_colors[0])
+    #     self.image.add(self.image.line(start=tuple(map(int, start_point)), end=tuple(map(int, end_point)), stroke=color, stroke_width=9))
+
+
     def draw_door_edges(self, room_to_doors, exterior_walls):
         for key, indices in room_to_doors.items():
-            room_type = self.data["types"][key]
+            # Check if indices is empty
+            if not indices:
+                print(f"No door indices for room with key: {key}")
+                continue
+            
+            try:
+                room_type = self.data["types"][key]
+                door = self.data["doors"][indices[0]]
+                
+                # Check if door index is out of range
+                if indices[0] >= len(self.data["doors"]):
+                    print(f"Index {indices[0]} out of range for doors list in room with key: {key}")
+                    continue
+                
+                start_point = door[1:3]
+                end_point = [door[1] + door[3], door[2] + door[4]]
+                door_edge_color = svgwrite.rgb(*monochrome_colors[room_type])
+                
+                self.image.add(self.image.line(start=tuple(map(int, start_point)), end=tuple(map(int, end_point)), stroke=door_edge_color, stroke_width=9))
+            
+            except IndexError as e:
+                print(f"IndexError for room with key: {key}, indices: {indices}, error: {e}")
+                continue
+            except KeyError as e:
+                print(f"KeyError: Missing key {e} in data for room with key: {key}")
+                continue
+        
+        # Handle exterior walls
+        if exterior_walls:
+            start_point = exterior_walls[0][0]
+            end_point = exterior_walls[0][1]
+            color = svgwrite.rgb(*monochrome_colors[0])
+            self.image.add(self.image.line(start=tuple(map(int, start_point)), end=tuple(map(int, end_point)), stroke=color, stroke_width=9))
+        else:
+            print("No exterior walls provided.")
 
-            door = self.data["doors"][indices[0]]
-            start_point = door[1:3]
-            end_point = [door[1]+door[3], door[2]+door[4]]
-
-            door_edge_color = svgwrite.rgb(*monochrome_colors[room_type])
-            self.image.add(self.image.line(start=tuple(map(int, start_point)), end=tuple(map(int, end_point)), stroke=door_edge_color, stroke_width=9))
-
-        start_point = exterior_walls[0][0]
-        end_point = exterior_walls[0][1]
-        color = svgwrite.rgb(*monochrome_colors[0])
-        self.image.add(self.image.line(start=tuple(map(int, start_point)), end=tuple(map(int, end_point)), stroke=color, stroke_width=9))
 
     def draw_doors(self, walls, exterior_walls):
         room_to_doors = dict()

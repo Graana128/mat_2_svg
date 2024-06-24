@@ -23,7 +23,6 @@ from annot_data import directions
 #     return dict(sorted(sorted_corners.items(), key=lambda item: item[1], reverse=True))
 
 
-
 def sort_corners(corner_points, doors):
     sorted_corners = dict()
 
@@ -84,13 +83,13 @@ def place_asset(image, start_point, dim, rotation, used_space, path):
 
     used_space.append([[x+y], [x+dim[0], y+dim[1]]])
 
-def bathroom_asset_placement(image, room, room_type, data, used_space):
+def kitchen_asset_placement(image, room, room_type, data, used_space):
     door_indices = get_object_indices(room, data["doors"], isMultiple=True)
     doors = [data["doors"][idx] for idx in door_indices]
     corner_points = [wall[0] for wall in room]
     center_points = [[(wall[0][0]+wall[1][0])//2, (wall[0][1]+wall[1][1])//2] for wall in room]
 
-    assets = ["asset_data/sink.svg", "asset_data/toilet.svg"]
+    assets = ["asset_data/stove.svg"]
     dimensions = [(40, 40)]
 
     sorted_points = sort_corners(corner_points, doors)
