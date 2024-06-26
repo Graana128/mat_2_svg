@@ -69,9 +69,17 @@ directions = {
     "coffetable.svg": "South",
     "toilet.svg": "South",
     "sink.svg": "South",
-    "shower.svg": "West",
-    "stove.svg": "North",
+    "shower.svg": "South",
+    "stove.svg": "South",
     "TV.svg": "South",
+    "kitchen-sink.svg": "South",
+    "fridge.svg": "East",
+    "dish-washer.svg": "South",
+    "closet.svg": "South",
+    "sofa-curved.svg": "North",
+    "sofa-armchair.svg": "North",
+    "dinning-table.svg": "North",
+    "pool-table.svg": "West",
 }
 
 dimensions = {

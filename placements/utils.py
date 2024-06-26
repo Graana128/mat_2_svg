@@ -132,13 +132,36 @@ def change_orientation(current_direction, desired_direction):
     angle = direction_map.get((current_direction, desired_direction), 0)
     return angle if angle >= 0 else angle + 360
 
+def is_point_inside_polygon(polygon, point):
+    """
+    Determine if the point is inside the polygon using ray-casting algorithm.
+    """
+    x, y = point
+    inside = False
+
+    n = len(polygon)
+    p1x, p1y = polygon[0]
+    for i in range(n+1):
+        p2x, p2y = polygon[i % n]
+        if y > min(p1y, p2y):
+            if y <= max(p1y, p2y):
+                if x <= max(p1x, p2x):
+                    if p1y != p2y:
+                        xinters = (y - p1y) * (p2x - p1x) / (p2y - p1y) + p1x
+                    if p1x == p2x or x <= xinters:
+                        inside = not inside
+        p1x, p1y = p2x, p2y
+
+    return inside
+
 def isValidPoint(points, room, used_space):
     for point in used_space:
         if any(is_point_inside_rectangle(asset_point, *point) for asset_point in points):
             return False
 
-    polygon_points = [point for edge in room for point in edge]
-    if all(point_in_polygon(polygon_points, asset_point) for asset_point in points):
+    polygon_points = [edge[0] for edge in room]
+    result = [point_in_polygon(polygon_points, asset_point) for asset_point in points]
+    if all(result):
         return True
     
     return False
@@ -149,6 +172,41 @@ def is_point_inside_rectangle(point, upper_left, bottom_right):
     br_x, br_y = bottom_right
 
     return ul_x <= x <= br_x and ul_y <= y <= br_y
+
+def sort_corners(corner_points, doors):
+    sorted_corners = dict()
+
+    for point in corner_points:
+        distances = []
+        for door in doors:
+            if len(door) < 5:
+                print(f"Invalid door data: {door}")
+                continue
+
+            x, y, w, h = door[1:5]
+            start_point = [x, y]
+            end_point = [x + w, y + h]
+            distances.append(calculate_distance(point, start_point))
+            distances.append(calculate_distance(point, end_point))
+        
+        if not distances:
+            print(f"No distances calculated for point: {point}")
+            continue
+
+        min_distance = min(distances)
+        if min_distance >= 10:
+            sorted_corners[tuple(point)] = min_distance
+
+    return dict(sorted(sorted_corners.items(), key=lambda item: item[1], reverse=True))
+
+def get_tuple_index(tuples_list, target_tuple):
+    for index, (first_tuple, _) in enumerate(tuples_list):
+        if first_tuple[0] == target_tuple[0] and first_tuple[1] == target_tuple[1]:
+            return index
+    return -1
+
+
+
 
 
 

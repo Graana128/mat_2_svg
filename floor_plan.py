@@ -5,14 +5,25 @@ from utils import *
 from annot_data import *
 from placements.utils import find_direction
 from placements.placements import placements
+from placements.annotation import annotate, place_info_text
 
 class FloorplanGenerator:
-    def __init__(self, mat_data, output_file="output.svg"):
+    def __init__(self, mat_data, output_file="output.svg", image_size=1080):
         self.data = mat_data
-        self.image_size = 1080
+        self.image_size = image_size
+        self.output_file = output_file
 
-        self.image = svgwrite.Drawing(output_file, size=(f"{self.image_size}px", f"{self.image_size}px"), profile="tiny")
-        self.image.add(self.image.rect(insert=(0, 0), size=(f"{self.image_size}px", f"{self.image_size}px"), fill='white'))
+        # Set the viewBox to match the original content size
+        self.viewBox_size = 1080  # Assuming the original content size is 1080x1080
+
+        self.image = svgwrite.Drawing(
+            self.output_file,
+            size=(f"{self.image_size}px", f"{self.image_size}px"),
+            profile="tiny",
+            viewBox=f"0 0 {self.viewBox_size} {self.viewBox_size}"
+        )
+
+        self.image.add(self.image.rect(insert=(0, 0), size=(f"{self.viewBox_size}px", f"{self.viewBox_size}px"), fill='white'))
 
     def get_interior_walls(self):
         interior_walls = []
@@ -98,23 +109,6 @@ class FloorplanGenerator:
             else:
                 continue
 
-    # def draw_door_edges(self, room_to_doors, exterior_walls):
-    #     for key, indices in room_to_doors.items():
-    #         room_type = self.data["types"][key]
-
-    #         door = self.data["doors"][indices[0]]
-    #         start_point = door[1:3]
-    #         end_point = [door[1]+door[3], door[2]+door[4]]
-
-    #         door_edge_color = svgwrite.rgb(*monochrome_colors[room_type])
-    #         self.image.add(self.image.line(start=tuple(map(int, start_point)), end=tuple(map(int, end_point)), stroke=door_edge_color, stroke_width=9))
-
-    #     start_point = exterior_walls[0][0]
-    #     end_point = exterior_walls[0][1]
-    #     color = svgwrite.rgb(*monochrome_colors[0])
-    #     self.image.add(self.image.line(start=tuple(map(int, start_point)), end=tuple(map(int, end_point)), stroke=color, stroke_width=9))
-
-
     def draw_door_edges(self, room_to_doors, exterior_walls):
         for key, indices in room_to_doors.items():
             # Check if indices is empty
@@ -153,7 +147,6 @@ class FloorplanGenerator:
         else:
             print("No exterior walls provided.")
 
-
     def draw_doors(self, walls, exterior_walls):
         room_to_doors = dict()
         rooms = split_rooms(walls, None)
@@ -190,8 +183,10 @@ class FloorplanGenerator:
         self.draw_windows(exterior_walls, windows_indices)
         room_to_doors = self.draw_doors(walls, exterior_walls)
 
-        # asset placements
+        # asset placements and annotation
         placements(self.image, walls, exterior_walls, self.data, room_to_doors)
+        annotate(self.image, walls, self.data["types"])
+        place_info_text(self.image)
 
         # saving vectors
         self.image.save()
@@ -205,6 +200,14 @@ if __name__ == "__main__":
 
     floor_plan = FloorplanGenerator(mat_data)
     floor_plan.draw()
+
+
+
+
+
+
+
+
 
 
 

@@ -122,8 +122,23 @@ def remove_duplicate_objects(objects):
 
     return objects
 
+def find_largest_walls(room):
+    vertical_wall, vertical_dist = None, -1
+    horizontal_wall, horiznotal_dist = None, -1
 
-
+    for wall in room:
+        if wall[0][0] == wall[1][0]:
+            distance = abs(wall[0][1]-wall[1][1])
+            if distance > vertical_dist:
+                vertical_dist = distance
+                vertical_wall = wall
+        else:
+            distance = abs(wall[0][0]-wall[1][0])
+            if distance > horiznotal_dist:
+                horiznotal_dist = distance
+                horizontal_wall = wall
+    
+    return horizontal_wall, vertical_wall
 
 
 

@@ -5,25 +5,6 @@ from utils import get_object_indices
 from annot_data import directions
 
 
-# def sort_corners(corner_points, doors):
-#     sorted_corners = dict()
-
-#     for point in corner_points:
-#         distances = []
-#         for door in doors:
-#             x, y, w, h = door[1:5]
-#             start_point, end_point = [x, y], [x+w, y+h]
-#             distances.append(calculate_distance(point, start_point))
-#             distances.append(calculate_distance(point, end_point))
-        
-#         min_distance = min(distances)
-#         if min_distance>=10:
-#             sorted_corners[tuple(point)] = min_distance
-
-#     return dict(sorted(sorted_corners.items(), key=lambda item: item[1], reverse=True))
-
-
-
 def sort_corners(corner_points, doors):
     sorted_corners = dict()
 
@@ -45,13 +26,12 @@ def sort_corners(corner_points, doors):
             continue
 
         min_distance = min(distances)
-        if min_distance >= 10:
+        if min_distance >= 20:
             sorted_corners[tuple(point)] = min_distance
 
     return dict(sorted(sorted_corners.items(), key=lambda item: item[1], reverse=True))
 
-
-def get_corner_asset__position(cx, cy, desired_direction, obj_dim):
+def get_corner_asset_position(cx, cy, desired_direction, obj_dim):
     padding = 7
     if desired_direction == "South":
         x = cx - obj_dim[0] - padding
@@ -65,6 +45,23 @@ def get_corner_asset__position(cx, cy, desired_direction, obj_dim):
     else:  # West
         x = cx - obj_dim[0] - padding
         y = cy - obj_dim[1] - padding
+
+    return x, y
+
+def get_center_asset_position(cx, cy, desired_direction, obj_dim):
+    padding = 7
+    if desired_direction == "South":
+        x = cx - obj_dim[0]//2
+        y = cy + padding
+    elif desired_direction == "North":
+        x = cx - obj_dim[0]//2
+        y = cy - obj_dim[1] - padding
+    elif desired_direction == "East":
+        x = cx + padding
+        y = cy - obj_dim[1]//2
+    else:  # West
+        x = cx - obj_dim[0] - padding
+        y = cy - obj_dim[1]//2
 
     return x, y
 
@@ -82,33 +79,69 @@ def place_asset(image, start_point, dim, rotation, used_space, path):
     g.add(img)
     image.add(g)
 
-    used_space.append([[x+y], [x+dim[0], y+dim[1]]])
+    used_space.append([[x, y], [x+dim[0], y+dim[1]]])
+
+def get_tuple_index(tuples_list, target_tuple):
+    for index, (first_tuple, _) in enumerate(tuples_list):
+        if first_tuple[0] == target_tuple[0] and first_tuple[1] == target_tuple[1]:
+            return index
+    return -1
 
 def bathroom_asset_placement(image, room, room_type, data, used_space):
     door_indices = get_object_indices(room, data["doors"], isMultiple=True)
     doors = [data["doors"][idx] for idx in door_indices]
+    
     corner_points = [wall[0] for wall in room]
     center_points = [[(wall[0][0]+wall[1][0])//2, (wall[0][1]+wall[1][1])//2] for wall in room]
 
-    assets = ["asset_data/sink.svg", "asset_data/toilet.svg"]
-    dimensions = [(40, 40)]
-
+    dimensions = [(35, 35), [40, 40], [35,35]]
+    assets = ["asset_data/sink.svg", "asset_data/shower.svg", "asset_data/toilet.svg"]
     sorted_points = sort_corners(corner_points, doors)
-    idx = 0
-    for idx, wall in enumerate(room):
-        ### NOTE: pick wall according to sorted_points
-        # wall = room[idx]
-        dim = dimensions[0] # change iindex
-        wall_direction = find_direction(room, idx)
-        
-        asset_direction = directions[assets[0].split("/")[-1]] # change index
-        rotation = change_orientation(asset_direction, wall_direction)
 
-        x, y = get_corner_asset__position(wall[0][0], wall[0][1], wall_direction, dim)
-        points = [[x, y], [x, y+dim[1]], [x+dim[0], y], [x+dim[0], y+dim[1]]]
-        if isValidPoint(points, room, used_space):
-            place_asset(image, points[0], dim, rotation, used_space, assets[0]) # change index
-            break
+    for i, asset in enumerate(assets):
+        isPlaced = False
+        dim = dimensions[i]
+        for point in sorted_points.keys():
+            idx = get_tuple_index(room, point)
+            wall = room[idx]
+            wall_direction = find_direction(room, idx)
+            
+            asset_direction = directions[asset.split("/")[-1]]
+            rotation = change_orientation(asset_direction, wall_direction)
+
+            x, y = get_corner_asset_position(wall[0][0], wall[0][1], wall_direction, dim)
+            points = [[x, y], [x, y+dim[1]], [x+dim[0], y], [x+dim[0], y+dim[1]]]
+            
+            if isValidPoint(points, room, used_space):
+                place_asset(image, points[0], dim, rotation, used_space, asset)
+                isPlaced = True
+                break
+
+        if isPlaced:
+            continue
+
+        for idx, point in enumerate(center_points):
+            wall = room[idx]
+            wall_direction = find_direction(room, idx)
+            
+            asset_direction = directions[asset.split("/")[-1]]
+            rotation = change_orientation(asset_direction, wall_direction)
+
+            x, y = get_center_asset_position(point[0], point[1], wall_direction, dim)
+            points = [[x, y], [x, y+dim[1]], [x+dim[0], y], [x+dim[0], y+dim[1]]]
+            
+            if isValidPoint(points, room, used_space):
+                place_asset(image, points[0], dim, rotation, used_space, asset)
+                isPlaced = True
+                break
+
+
+
+
+
+
+
+
 
 
 

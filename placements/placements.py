@@ -1,7 +1,7 @@
 from utils import split_rooms
 from placements.doors import door_asset_placement
-from placements.bed import bed_asset_placement
-from placements.sofa import sofa_asset_placement
+from placements.livingroom import livingroom_asset_placement
+from placements.bedroom import bedroom_asset_placement
 from placements.balcony import balcony_asset_placement
 from placements.bathroom import bathroom_asset_placement
 from placements.kitchen import kitchen_asset_placement
@@ -15,10 +15,10 @@ def placements(image, walls, exterior_walls, data, room_to_doors):
 
         if room_type==0: # Living Room
             door_asset_placement(image, exterior_walls, room_type, data, [0], used_space)
-            sofa_asset_placement(image, exterior_walls, rooms, data, used_space)
+            livingroom_asset_placement(image, room, data, used_space)
         elif room_type in [1,5,7,8]: # Matser Room + Rooms
             door_asset_placement(image, room, room_type, data, room_to_doors[rm_idx], used_space)
-            bed_asset_placement(image, room, data, used_space)
+            bedroom_asset_placement(image, room, data, used_space)
         elif room_type==2: # Kitchen
             door_asset_placement(image, room, room_type, data, room_to_doors[rm_idx], used_space)
             kitchen_asset_placement(image, room, room_type, data, used_space)

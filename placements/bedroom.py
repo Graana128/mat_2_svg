@@ -4,6 +4,40 @@ from placements.utils import *
 
 from annot_data import directions
 
+def get_corner_asset_position(cx, cy, desired_direction, obj_dim):
+    padding = 7
+    if desired_direction == "South":
+        x = cx - obj_dim[0] - padding
+        y = cy + padding
+    elif desired_direction == "North":
+        x = cx + padding
+        y = cy - obj_dim[1] - padding
+    elif desired_direction == "East":
+        x = cx + padding
+        y = cy + padding
+    else:  # West
+        x = cx - obj_dim[0] - padding
+        y = cy - obj_dim[1] - padding
+
+    return x, y
+
+def get_center_asset_position(cx, cy, desired_direction, obj_dim):
+    padding = 5
+    if desired_direction == "South":
+        x = cx - obj_dim[0]//2
+        y = cy + padding
+    elif desired_direction == "North":
+        x = cx - obj_dim[0]//2 + padding
+        y = cy - obj_dim[1] - padding
+    elif desired_direction == "East":
+        x = cx + padding
+        y = cy - obj_dim[1]//2
+    else:  # West
+        x = cx - obj_dim[0] - padding
+        y = cy - obj_dim[1]//2
+
+    return x, y
+
 def get_bed_position(cx, cy, desired_direction, obj_dim):
     padding = 8
     if desired_direction == "South":
@@ -21,54 +55,95 @@ def get_bed_position(cx, cy, desired_direction, obj_dim):
 
     return x, y
 
-def place_bed(image, start_point, dim, rotation, used_space):
+def place_asset(image, start_point, dim, rotation, used_space, path="asset_data/bed.svg", padding=10):
     x, y = start_point
-
-    print(rotation)
+    used_space.append([[x,y], [x+dim[0], y+dim[1]]])
+    
     if rotation==90:
-        x += 10
+        x += padding
     elif rotation==270:
-        x -= 10
+        x -= padding
 
     g = Group()
-
-    img = image.image(href="asset_data/bed.svg", insert=(x, y), size=(f"{dim[0]}px", f"{dim[1]}px"))
-    img['preserveAspectRatio'] = 'none'
+    img = image.image(href=path, insert=(int(x), int(y)), size=(f"{dim[0]}px", f"{dim[1]}px"))
 
     center_x = x + dim[0] / 2
     center_y = y + dim[1] / 2
     img.rotate(rotation, center=(center_x, center_y))
+    img['preserveAspectRatio'] = 'none'
 
     g.add(img)
     image.add(g)
 
-    used_space.append([[x,y], [x+dim[0], y+dim[1]]])
-
-def bed_asset_placement(image, room, data, used_space):
+def bedroom_asset_placement(image, room, data, used_space):
     windows_indices = get_object_indices(room, data["windows"], isMultiple=True)
-    bed_direction = directions["bed.svg"]
+    dimensions = [(110, 100), [80, 40], (30, 5)]
+    paddings = [10, 25, 0]
+    assets = ["asset_data/bed.svg", "asset_data/closet.svg", "asset_data/TV.svg"]
 
     for win_idx in windows_indices:
         window = data["windows"][win_idx]
         wall_index = get_wall_index(room, [window])
         wall_direction = find_direction(room, wall_index)
+        bed_direction = directions["bed.svg"]
         rotation = change_orientation(bed_direction, wall_direction)
 
         cx, cy = window[1:3]
-        dim = [90, 70]
+        dim = dimensions[0]
         x, y = get_bed_position(cx, cy, wall_direction, dim)
 
         points = [[x, y], [x, y+dim[1]], [x+dim[0], y], [x+dim[0], y+dim[1]]]
         if isValidPoint(points, room, used_space):
-            place_bed(image, points[0], dim, rotation, used_space)
+            place_asset(image, points[0], dim, rotation, used_space)
+            assets.pop(0)
+            dimensions.pop(0)
+            paddings.pop(0)
             break
 
         # what if above code not work?
 
+    door_indices = get_object_indices(room, data["doors"], isMultiple=True)
+    doors = [data["doors"][idx] for idx in door_indices]
+    
+    corner_points = [wall[0] for wall in room]
+    center_points = [[(wall[0][0]+wall[1][0])//2, (wall[0][1]+wall[1][1])//2] for wall in room]
+    sorted_points = sort_corners(corner_points, doors)
 
+    for i, asset in enumerate(assets[:-1]):
+        isPlaced = False
+        dim = dimensions[i]
+        asset_direction = directions[asset.split("/")[-1]]
+        padding = paddings[i]
 
+        for idx, point in enumerate(center_points):
+            wall = room[idx]
+            wall_direction = find_direction(room, idx)
+            rotation = change_orientation(asset_direction, wall_direction)
+            
+            # rotation = 0
+            x, y = get_center_asset_position(point[0], point[1], wall_direction, dim)
+            points = [[x, y], [x, y+dim[1]], [x+dim[0], y], [x+dim[0], y+dim[1]]]
+            if isValidPoint(points, room, used_space):
+                place_asset(image, points[0], dim, rotation, used_space, asset, padding)
+                isPlaced = True
+                break
 
+        if isPlaced:
+            continue
 
+        for point in sorted_points.keys():
+            idx = get_tuple_index(room, point)
+            wall = room[idx]
+            wall_direction = find_direction(room, idx)
+            rotation = change_orientation(asset_direction, wall_direction)
+
+            x, y = get_corner_asset_position(wall[0][0], wall[0][1], wall_direction, dim)
+            points = [[x, y], [x, y+dim[1]], [x+dim[0], y], [x+dim[0], y+dim[1]]]
+            
+            if isValidPoint(points, room, used_space):
+                place_asset(image, points[0], dim, rotation, used_space, asset, padding)
+                isPlaced = True
+                break
 
 
 
