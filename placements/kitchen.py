@@ -61,7 +61,7 @@ def kitchen_asset_placement(image, room, room_type, data, used_space):
     corner_points = [wall[0] for wall in room]
     center_points = [[(wall[0][0]+wall[1][0])//2, (wall[0][1]+wall[1][1])//2] for wall in room]
 
-    dimensions = [(28, 28), [35, 30], (28, 28), (28, 28)]
+    dimensions = [(40, 40), [35, 30], (28, 28), (28, 28)]
     assets = ["asset_data/stove.svg", "asset_data/kitchen-sink.svg", "asset_data/fridge.svg", "asset_data/dish-washer.svg"]
     sorted_points = sort_corners(corner_points, doors)
 

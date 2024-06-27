@@ -35,7 +35,7 @@ def place_text_inside_room(image, room, text_X, text_Y, text):
         image.add(image.text(
             text,
             insert=(int(text_X), int(text_Y)),
-            font_size=28,
+            font_size=18,
             font_family="Helvetica",
             fill='black'
         ))

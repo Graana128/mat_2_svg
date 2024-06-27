@@ -32,7 +32,7 @@ def sort_corners(corner_points, doors):
     return dict(sorted(sorted_corners.items(), key=lambda item: item[1], reverse=True))
 
 def get_corner_asset_position(cx, cy, desired_direction, obj_dim):
-    padding = 7
+    padding = 2
     if desired_direction == "South":
         x = cx - obj_dim[0] - padding
         y = cy + padding
@@ -94,8 +94,8 @@ def bathroom_asset_placement(image, room, room_type, data, used_space):
     corner_points = [wall[0] for wall in room]
     center_points = [[(wall[0][0]+wall[1][0])//2, (wall[0][1]+wall[1][1])//2] for wall in room]
 
-    dimensions = [(35, 35), [40, 40], [35,35]]
-    assets = ["asset_data/sink.svg", "asset_data/shower.svg", "asset_data/toilet.svg"]
+    dimensions = [(35, 35), [40, 40], [38,38]]
+    assets = ["asset_data/sink.svg", "asset_data/toilet.svg", "asset_data/shower.svg"]
     sorted_points = sort_corners(corner_points, doors)
 
     for i, asset in enumerate(assets):
@@ -117,23 +117,23 @@ def bathroom_asset_placement(image, room, room_type, data, used_space):
                 isPlaced = True
                 break
 
-        if isPlaced:
-            continue
+        # if isPlaced:
+        #     continue
 
-        for idx, point in enumerate(center_points):
-            wall = room[idx]
-            wall_direction = find_direction(room, idx)
+        # for idx, point in enumerate(center_points):
+        #     wall = room[idx]
+        #     wall_direction = find_direction(room, idx)
             
-            asset_direction = directions[asset.split("/")[-1]]
-            rotation = change_orientation(asset_direction, wall_direction)
+        #     asset_direction = directions[asset.split("/")[-1]]
+        #     rotation = change_orientation(asset_direction, wall_direction)
 
-            x, y = get_center_asset_position(point[0], point[1], wall_direction, dim)
-            points = [[x, y], [x, y+dim[1]], [x+dim[0], y], [x+dim[0], y+dim[1]]]
+        #     x, y = get_center_asset_position(point[0], point[1], wall_direction, dim)
+        #     points = [[x, y], [x, y+dim[1]], [x+dim[0], y], [x+dim[0], y+dim[1]]]
             
-            if isValidPoint(points, room, used_space):
-                place_asset(image, points[0], dim, rotation, used_space, asset)
-                isPlaced = True
-                break
+        #     if isValidPoint(points, room, used_space):
+        #         place_asset(image, points[0], dim, rotation, used_space, asset)
+        #         isPlaced = True
+        #         break
 
 
 

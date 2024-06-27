@@ -72,34 +72,6 @@ def get_points(wall):
 
     return start_point, end_point
 
-# def door_asset_placement(image, room, room_type, data, door_index, used_space):
-#     if room_type==0:
-#         start_point, end_point = get_points(room[0])
-#         door = [0, *start_point, abs(start_point[0]-end_point[0]), abs(start_point[1]-end_point[1])]
-#     else:
-#         door = data["doors"][door_index[0]]
-    
-#     wall_index = 0 if room_type==0 else get_wall_index(room, [door])
-#     desired_direction = find_direction(room, wall_index)
-#     door_path = get_door_path(room[wall_index], door, room_type)
-#     door_direction = directions[door_path.split("/")[-1]]
-
-#     size = door[4] if door[3]==0 else door[3]
-#     width = size
-#     height = size if room_type==0 else size
-#     x, y = get_door_position(room_type, door, desired_direction, (width, height))
-#     rotation = change_orientation(door_direction, desired_direction)
-      
-#     g = Group()
-#     img = image.image(href=door_path, size=(f"{width}px", f"{height}px"))
-#     img.translate(x, y)
-#     img.rotate(rotation, center=(width//2, height//2))
-#     g.add(img)
-#     image.add(g)
-
-#     used_space.append([[x, y], [x+width, y+height]])
-
-
 
 def door_asset_placement(image, room, room_type, data, door_index, used_space):
     if room_type == 0:
@@ -121,8 +93,7 @@ def door_asset_placement(image, room, room_type, data, door_index, used_space):
     door_direction = directions[door_path.split("/")[-1]]
 
     size = door[4] if door[3] == 0 else door[3]
-    width = size
-    height = size if room_type == 0 else size
+    width, height = size, size
     x, y = get_door_position(room_type, door, desired_direction, (width, height))
     rotation = change_orientation(door_direction, desired_direction)
       

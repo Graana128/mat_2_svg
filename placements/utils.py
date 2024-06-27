@@ -155,8 +155,18 @@ def is_point_inside_polygon(polygon, point):
     return inside
 
 def isValidPoint(points, room, used_space):
+    asset_center_point = [abs(points[0][0]-points[-1][0])//2,abs(points[0][1]-points[-1][1])//2]
+
+    # checking if asset intersect with existing points
     for point in used_space:
+        us_center_point = [abs(point[0][0]-point[1][0])//2,abs(point[0][1]-point[1][1])//2]
         if any(is_point_inside_rectangle(asset_point, *point) for asset_point in points):
+            return False
+        if any(is_point_inside_rectangle(us_point, points[0], points[3]) for us_point in point):
+            return False
+        if is_point_inside_rectangle(asset_center_point, *point):
+            return False
+        if is_point_inside_rectangle(us_center_point, points[0], points[3]):
             return False
 
     polygon_points = [edge[0] for edge in room]

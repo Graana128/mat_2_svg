@@ -22,7 +22,7 @@ def get_corner_asset_position(cx, cy, desired_direction, obj_dim):
     return x, y
 
 def get_center_asset_position(cx, cy, desired_direction, obj_dim):
-    padding = 5
+    padding = 12
     if desired_direction == "South":
         x = cx - obj_dim[0]//2
         y = cy + padding
@@ -71,8 +71,8 @@ def place_asset(image, start_point, dim, rotation, used_space, path="asset_data/
     image.add(g)
 
 def livingroom_asset_placement(image, room, data, used_space):
-    dimensions = [(120, 90), [120, 60], [120, 60]]
-    assets = ["asset_data/sofa.svg", "asset_data/dinning-table.svg", "asset_data/pool-table.svg"]
+    dimensions = [(120, 90), [110, 70]]
+    assets = ["asset_data/sofa.svg", "asset_data/dinning-table.svg"]
     windows_indices = get_object_indices(room, data["windows"], isMultiple=True)
 
     for win_idx in windows_indices:

@@ -47,10 +47,10 @@ def get_bed_position(cx, cy, desired_direction, obj_dim):
         x = cx
         y = cy - obj_dim[1] - padding
     elif desired_direction == "East":
-        x = cx + padding
+        x = cx + padding + 4
         y = cy
     else:  # West
-        x = cx - obj_dim[0] - padding
+        x = cx - obj_dim[0] - padding - 4
         y = cy
 
     return x, y
