@@ -155,11 +155,11 @@ def is_point_inside_polygon(polygon, point):
     return inside
 
 def isValidPoint(points, room, used_space):
-    asset_center_point = [abs(points[0][0]-points[-1][0])//2,abs(points[0][1]-points[-1][1])//2]
+    asset_center_point = [abs(points[0][0]-points[-1][0])//2, abs(points[0][1]-points[-1][1])//2]
 
     # checking if asset intersect with existing points
     for point in used_space:
-        us_center_point = [abs(point[0][0]-point[1][0])//2,abs(point[0][1]-point[1][1])//2]
+        us_center_point = [abs(point[0][0]-point[1][0])//2, abs(point[0][1]-point[1][1])//2]
         if any(is_point_inside_rectangle(asset_point, *point) for asset_point in points):
             return False
         if any(is_point_inside_rectangle(us_point, points[0], points[3]) for us_point in point):
@@ -210,14 +210,10 @@ def sort_corners(corner_points, doors):
     return dict(sorted(sorted_corners.items(), key=lambda item: item[1], reverse=True))
 
 def get_tuple_index(tuples_list, target_tuple):
-    for index, (first_tuple, _) in enumerate(tuples_list):
-        if first_tuple[0] == target_tuple[0] and first_tuple[1] == target_tuple[1]:
+    for index, (first_tuple, second_tuple) in enumerate(tuples_list):
+        if (first_tuple[0] == target_tuple[0] and first_tuple[1] == target_tuple[1]) or (second_tuple[0] == target_tuple[0] and second_tuple[1] == target_tuple[1]):
             return index
     return -1
-
-
-
-
 
 
 

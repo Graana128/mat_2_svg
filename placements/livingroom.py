@@ -70,7 +70,74 @@ def place_asset(image, start_point, dim, rotation, used_space, path="asset_data/
     g.add(img)
     image.add(g)
 
-def livingroom_asset_placement(image, room, data, used_space):
+def get_door_position(room_type, door, desired_direction, door_dim):
+    cx, cy = door[1], door[2]
+    if room_type in [9, 11, 12]:
+        if desired_direction == "South":
+            x = cx
+            y = cy - door_dim[0]//2
+        elif desired_direction == "North":
+            x = cx
+            y = cy - door_dim[1]//2
+        elif desired_direction == "East":
+            x = cx - door_dim[1]//2
+            y = cy
+        else:  # West
+            x = cx - door_dim[1]//2
+            y = cy
+    elif room_type==0:
+        if desired_direction == "South":
+            x = cx
+            y = cy-13
+        elif desired_direction == "North":
+            x = cx
+            y = cy-door_dim[1]+10
+        elif desired_direction == "East":
+            x = cx-13
+            y = cy
+        else:  # West
+            x = cx-door_dim[0]+15
+            y = cy
+    else:
+        if desired_direction == "South":
+            x = cx
+            y = cy
+        elif desired_direction == "North":
+            x = cx
+            y = cy - door_dim[1]
+        elif desired_direction == "East":
+            x = cx
+            y = cy
+        else:  # West
+            x = cx - door_dim[0]
+            y = cy
+
+    return x, y
+
+def get_room_type(idx, room_to_doors, data):
+    for room, doors in room_to_doors.items():
+        if idx in doors:
+            return data["types"][room]
+        
+    return None
+
+def get_door_dimensions(room, data, room_to_doors, used_space):
+    door_indices = get_object_indices(room, data["doors"], isMultiple=True)
+
+    for idx in door_indices:
+        door = data["doors"][idx]
+        wall_idx = get_wall_index(room, [door])
+        wall_direction = find_direction(room, wall_idx)
+        size = door[4] if door[3] == 0 else door[3]
+        room_type = get_room_type(idx, room_to_doors, data)
+        if room_type not in [9, 11, 12]:
+            x, y = get_door_position(room_type, door, wall_direction, (size, size))
+            used_space.append([[x, y], [x+size, y+size]])
+
+
+def livingroom_asset_placement(image, room, data, room_to_doors, used_space):
+    get_door_dimensions(room, data, room_to_doors, used_space)
+
     dimensions = [(120, 90), [110, 70]]
     assets = ["asset_data/sofa.svg", "asset_data/dinning-table.svg"]
     windows_indices = get_object_indices(room, data["windows"], isMultiple=True)

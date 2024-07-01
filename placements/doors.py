@@ -6,7 +6,7 @@ from annot_data import directions
 def get_door_path(wall, door, room_type):
         if room_type==0:
             return "asset_data/double_door.svg"   
-        elif room_type in [9, 11]:
+        elif room_type in [9, 11, 12]:
                 return "asset_data/sliding_door.svg"
 
         wall_point1, wall_point2 = wall
@@ -16,14 +16,11 @@ def get_door_path(wall, door, room_type):
         distance1 = calculate_distance(wall_point1, door_point1)
         distance2 = calculate_distance(wall_point2, door_point2)
 
-        # if direction in ["East", "West"]:
-        #     return "asset_data/right_door.svg" if distance1 > distance2 else "asset_data/left_door.svg"
-        # else:
         return "asset_data/right_door.svg" if distance1 > distance2 else "asset_data/left_door.svg"
     
 def get_door_position(room_type, door, desired_direction, door_dim):
     cx, cy = door[1], door[2]
-    if room_type in [9, 11]:
+    if room_type in [9, 11, 12]:
         if desired_direction == "South":
             x = cx
             y = cy - door_dim[0]//2
@@ -72,7 +69,6 @@ def get_points(wall):
 
     return start_point, end_point
 
-
 def door_asset_placement(image, room, room_type, data, door_index, used_space):
     if room_type == 0:
         start_point, end_point = get_points(room[0])
@@ -105,6 +101,7 @@ def door_asset_placement(image, room, room_type, data, door_index, used_space):
     image.add(g)
 
     used_space.append([[x, y], [x + width, y + height]])
+    return used_space[-1]
 
 
 

@@ -6,35 +6,20 @@ from placements.balcony import balcony_asset_placement
 from placements.bathroom import bathroom_asset_placement
 from placements.kitchen import kitchen_asset_placement
 
-def get_door_pos():
-    if desired_direction == "South":
-        x = cx
-        y = cy-13
-    elif desired_direction == "North":
-        x = cx
-        y = cy-door_dim[1]+10
-    elif desired_direction == "East":
-        x = cx-13
-        y = cy
-    else:  # West
-        x = cx-door_dim[0]+15
-        y = cy
-
 def placements(image, walls, exterior_walls, data, room_to_doors):
     rooms = split_rooms(walls)
-    livingroom = [room for rm_idx, room in enumerate(rooms) if data["types"][rm_idx]==0][0]
-    livingroom_door = livingroom[0]
-    size = livingroom_door[4] if livingroom_asset_placement[3] == 0 else livingroom_door[3]
+    used_space = []
+    
+    room = [room for idx, room in enumerate(rooms) if data["types"][idx]==0][0]
+    door_points = door_asset_placement(image, exterior_walls, 0, data, [0], used_space)
+    livingroom_asset_placement(image, room, data, room_to_doors, used_space)
 
-
-    for rm_idx, room in enumerate(rooms):
+    idx = 0
+    for rm_idx, room in enumerate(rooms[idx:], start=idx):
         room_type = data["types"][rm_idx]
-        used_space = []
+        used_space = [door_points]
 
-        if room_type==0: # Living Room
-            door_asset_placement(image, exterior_walls, room_type, data, [0], used_space)
-            livingroom_asset_placement(image, room, data, used_space)
-        elif room_type in [1,5,7,8]: # Matser Room + Rooms
+        if room_type in [1,4,5,6,7,8]: # Matser Room + Rooms
             door_asset_placement(image, room, room_type, data, room_to_doors[rm_idx], used_space)
             bedroom_asset_placement(image, room, data, used_space)
         elif room_type==2: # Kitchen
@@ -43,16 +28,12 @@ def placements(image, walls, exterior_walls, data, room_to_doors):
         elif room_type==3: # Bathroom
             door_asset_placement(image, room, room_type, data, room_to_doors[rm_idx], used_space)
             bathroom_asset_placement(image, room, room_type, data, used_space)
-        elif room_type==4: # Dining Room
-            door_asset_placement(image, room, room_type, data, room_to_doors[rm_idx], used_space)
-        elif room_type==6: # Study Room
-            door_asset_placement(image, room, room_type, data, room_to_doors[rm_idx], used_space)
         elif room_type==9: # Balcony
             door_asset_placement(image, room, room_type, data, room_to_doors[rm_idx], used_space)
             balcony_asset_placement(image, room, data, used_space)
         elif room_type==10: # Entrance Room
             door_asset_placement(image, room, room_type, data, room_to_doors[rm_idx], used_space)
-        elif room_type==[11, 12]: # Storage Room
+        elif room_type in [11, 12]: # Storage Room & wall-in
             door_asset_placement(image, room, room_type, data, room_to_doors[rm_idx], used_space)
 
 

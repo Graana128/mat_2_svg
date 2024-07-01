@@ -1,81 +1,27 @@
-class Rectangle:
-    def __init__(self, upper_left, width, height, orientation='horizontal'):
-        self.upper_left = upper_left
-        self.width = width
-        self.height = height
-        self.orientation = orientation
-        self.update_corners()
+from shapely.geometry import Polygon, MultiPolygon
 
-    def update_corners(self):
-        x, y = self.upper_left
-        if self.orientation == 'horizontal':
-            self.lower_right = (x + self.width, y + self.height)
-        else:
-            self.lower_right = (x + self.height, y + self.width)
+def subtract_polygons(main_coords, subtractor_coords):
+    # Convert list of coordinates into Polygon objects
+    main_polygon = Polygon(main_coords)
+    subtractor_polygon = Polygon(subtractor_coords)
+    
+    # Calculate the difference between the main polygon and the subtractor polygon
+    result = main_polygon.difference(subtractor_polygon)
+    
+    # Check if the result is a MultiPolygon or a single Polygon
+    if isinstance(result, MultiPolygon):
+        return [list(poly.exterior.coords) for poly in result.geoms]
+    elif isinstance(result, Polygon):
+        return [list(result.exterior.coords)]
+    else:
+        return []  # No polygon to return if the difference is empty or not a polygon
 
-    def rotate(self):
-        if self.orientation == 'horizontal':
-            self.orientation = 'vertical'
-        else:
-            self.orientation = 'horizontal'
-        self.update_corners()
+# Example coordinates for the polygons
+main_polygon_coords = [(5, 5), (22, 5), (22, 13), (5, 13)]
+subtractor_polygon_coords = [(10, 10), (15, 10), (15, 5), (18, 5), (18, 15), (20, 15), (20, 10), (30, 10), (30, 30), (10, 30)]
 
-    def intersects(self, other):
-        return not (self.lower_right[0] <= other.upper_left[0] or
-                    self.upper_left[0] >= other.lower_right[0] or
-                    self.lower_right[1] <= other.upper_left[1] or
-                    self.upper_left[1] >= other.lower_right[1])
+# Calculating the resultant polygons after subtraction
+resultant_polygons = subtract_polygons(main_polygon_coords, subtractor_polygon_coords)
 
-
-def is_within_polygon(rect, polygon):
-    # Check if rectangle corners are within the polygon
-    for point in [rect.upper_left, rect.lower_right]:
-        if not (polygon[0][0] <= point[0] <= polygon[2][0] and
-                polygon[0][1] <= point[1] <= polygon[2][1]):
-            return False
-    return True
-
-
-def can_place_rectangle(rect, used_space, polygon, padding):
-    if not is_within_polygon(rect, polygon):
-        return False
-    for used_rect in used_space:
-        if rect.intersects(used_rect):
-            return False
-    return True
-
-
-def fill_polygon_with_rectangles(polygon, rectangles, padding=1, allow_orientation_change=True):
-    used_space = []
-
-    for rect in rectangles:
-        placed = False
-
-        if can_place_rectangle(rect, used_space, polygon, padding):
-            used_space.append(rect)
-            placed = True
-        elif allow_orientation_change:
-            rect.rotate()
-            if can_place_rectangle(rect, used_space, polygon, padding):
-                used_space.append(rect)
-                placed = True
-        
-        if not placed:
-            # Discard rectangle if it cannot be placed
-            continue
-
-    return used_space
-
-
-# Example Usage
-polygon = [(0, 0), (0, 10), (10, 10), (10, 0)]  # Define the polygon vertices
-rectangles = [
-    Rectangle((0, 0), 3, 2),
-    Rectangle((0, 0), 5, 2),
-    Rectangle((0, 0), 1, 3),
-    # Add more rectangles as needed
-]
-
-filled_space = fill_polygon_with_rectangles(polygon, rectangles, padding=1, allow_orientation_change=True)
-for rect in filled_space:
-    print(f"Placed rectangle at {rect.upper_left} with size ({rect.width}x{rect.height}) oriented {rect.orientation}")
+for i, polygon in enumerate(resultant_polygons, 1):
+    print(f"Resultant Polygon {i} Coordinates:", polygon)

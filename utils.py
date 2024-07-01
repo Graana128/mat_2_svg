@@ -1,6 +1,7 @@
 import scipy.io
 import numpy as np
 
+
 def load_matlab_file(file_path):
     mat_contents = scipy.io.loadmat(file_path)
     mat_contents = mat_contents["data"][0][0]
