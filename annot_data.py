@@ -104,45 +104,45 @@ room_assets = {
     12: ["door", "Walk-in", "clothes rack", "shoe rack", "mirror"]
 }
 
-# annotation_dict = {
-#     0: 'LivingRoom',
-#     1: 'MasterRoom',
-#     2: 'Kitchen',
-#     3: 'BathRoom',
-#     4: 'BedRoom',
-#     5: 'BedRoom',
-#     6: 'BedRoom',
-#     7: 'BedRoom',
-#     8: 'BedRoom',
-#     9: 'Balcony',
-#     10: 'Entrance',
-#     11: 'Storage',
-#     12: 'Wall-in',
-#     13: 'External',
-#     14: 'ExteriorWall',
-#     15: 'FrontDoor',
-#     16: 'InteriorWall',
-#     17: 'InteriorDoor'
-# }
-
-
 annotation_dict = {
-    0: 'LR',
-    1: 'MR',
-    2: 'Kc',
-    3: 'Bt',
-    4: 'BR',
-    5: 'BR',
-    6: 'BR',
-    7: 'BR',
-    8: 'BR',
-    9: 'Bl',
-    10: 'En',
-    11: 'St',
-    12: 'WI',
+    0: 'LivingRoom',
+    1: 'MasterRoom',
+    2: 'Kitchen',
+    3: 'BathRoom',
+    4: 'BedRoom',
+    5: 'BedRoom',
+    6: 'BedRoom',
+    7: 'BedRoom',
+    8: 'BedRoom',
+    9: 'Balcony',
+    10: 'Entrance',
+    11: 'Storage',
+    12: 'Wall-in',
     13: 'External',
     14: 'ExteriorWall',
     15: 'FrontDoor',
     16: 'InteriorWall',
     17: 'InteriorDoor'
 }
+
+
+# annotation_dict = {
+#     0: 'LR',
+#     1: 'MR',
+#     2: 'Kc',
+#     3: 'Bt',
+#     4: 'BR',
+#     5: 'BR',
+#     6: 'BR',
+#     7: 'BR',
+#     8: 'BR',
+#     9: 'Bl',
+#     10: 'En',
+#     11: 'St',
+#     12: 'WI',
+#     13: 'External',
+#     14: 'ExteriorWall',
+#     15: 'FrontDoor',
+#     16: 'InteriorWall',
+#     17: 'InteriorDoor'
+# }

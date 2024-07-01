@@ -134,7 +134,6 @@ def get_door_dimensions(room, data, room_to_doors, used_space):
             x, y = get_door_position(room_type, door, wall_direction, (size, size))
             used_space.append([[x, y], [x+size, y+size]])
 
-
 def livingroom_asset_placement(image, room, data, room_to_doors, used_space):
     get_door_dimensions(room, data, room_to_doors, used_space)
 

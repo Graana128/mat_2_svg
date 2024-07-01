@@ -194,7 +194,7 @@ class FloorplanGenerator:
 if __name__ == "__main__":
     mat_files_paths = glob("data/*.mat")
 
-    i = 9
+    i = 11
     print(mat_files_paths[i])
     mat_data = load_matlab_file(mat_files_paths[i])
 

@@ -124,7 +124,6 @@ def bedroom_asset_placement(image, room, data, used_space):
                 dim = [10,10]
                 asset = asset.split(".")[0] + "_vert.svg"
                 rotation = 0 if rotation==270 else 180
-            print(asset)
 
             # rotation = 0
             x, y = get_center_asset_position(point[0], point[1], wall_direction, dim)
