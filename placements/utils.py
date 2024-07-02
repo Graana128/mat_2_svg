@@ -1,6 +1,6 @@
 import math
 from shapely.geometry import Point, Polygon
-
+from annot_data import directions
 
 def get_wall_index(room, objects, largest=False):
     largest_object, largest_idx = 0, None
@@ -215,8 +215,18 @@ def get_tuple_index(tuples_list, target_tuple):
             return index
     return -1
 
+def get_asset_info(path, dim, room, wall_index):
+    wall_direction = find_direction(room, wall_index)
+    asset_direction = directions[path.split("/")[1]]
+    rotation = change_orientation(asset_direction, wall_direction)
 
+    if rotation in [90, 270]:
+        dim = dim[::-1]
+        path = path.split(".")[0] + "_rot.svg"
+        asset_direction = directions[path.split("/")[1]]
+        rotation = change_orientation(asset_direction, wall_direction)
 
+    return path, dim, wall_direction, rotation
 
 
 # The provided code includes a series of functions to support the placement and orientation of objects within a room based on wall and door positions. Here's a detailed summary of each function and its purpose:

@@ -1,4 +1,7 @@
+import shutil
 import svgwrite
+import subprocess
+
 from glob import glob
 
 from utils import *
@@ -162,7 +165,7 @@ class FloorplanGenerator:
 
         return room_to_doors
         
-    def draw(self):
+    def draw(self, path=""):
         # getting relevant data for drawing
         walls = self.get_interior_walls()
         exterior_walls = self.get_exterior_walls()
@@ -191,10 +194,30 @@ class FloorplanGenerator:
         # saving vectors
         self.image.save()
 
+        png_file = self.output_file.split(".")[0] + ".png"
+        command = [
+            'inkscape',
+            '--export-area-page',
+            '--export-dpi=400',
+            '--export-type=png',
+            f'--export-filename={png_file}',
+            self.output_file
+        ]
+
+        # Run the command
+        try:
+            subprocess.run(command, check=False)
+            print(f"Conversion successful: {self.output_file} converted to {png_file}")
+        except subprocess.CalledProcessError as e:
+            print(f"Error converting {self.output_file} to PNG: {e}")
+
+        shutil.copyfile(self.output_file, path+"/"+self.output_file)
+        shutil.copyfile(self.png_file, path+"/"+self.png_file)
+
 if __name__ == "__main__":
     mat_files_paths = glob("data/*.mat")
 
-    i = 11
+    i = 7
     print(mat_files_paths[i])
     mat_data = load_matlab_file(mat_files_paths[i])
 

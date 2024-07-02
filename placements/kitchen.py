@@ -5,7 +5,7 @@ from utils import get_object_indices
 from annot_data import directions
 
 def get_corner_asset_position(cx, cy, desired_direction, obj_dim):
-    padding = 7
+    padding = 5
     if desired_direction == "South":
         x = cx - obj_dim[0] - padding
         y = cy + padding
@@ -22,7 +22,7 @@ def get_corner_asset_position(cx, cy, desired_direction, obj_dim):
     return x, y
 
 def get_center_asset_position(cx, cy, desired_direction, obj_dim):
-    padding = 7
+    padding = 5
     if desired_direction == "South":
         x = cx - obj_dim[0]//2
         y = cy + padding
@@ -61,26 +61,25 @@ def kitchen_asset_placement(image, room, room_type, data, used_space):
     corner_points = [wall[0] for wall in room]
     center_points = [[(wall[0][0]+wall[1][0])//2, (wall[0][1]+wall[1][1])//2] for wall in room]
 
-    dimensions = [(40, 40), [35, 30], (28, 28), (28, 28)]
+    dimensions = [(35, 35), [35, 30], (28, 28), (28, 28)]
     assets = ["asset_data/stove.svg", "asset_data/kitchen-sink.svg", "asset_data/fridge.svg", "asset_data/dish-washer.svg"]
     sorted_points = sort_corners(corner_points, doors)
 
-    for i, asset in enumerate(assets):
+    for i, asset_path in enumerate(assets):
         isPlaced = False
-        dim = dimensions[i]
-        asset_direction = directions[asset.split("/")[-1]]
+        dimension = dimensions[i]
 
         for point in sorted_points.keys():
             idx = get_tuple_index(room, point)
+            
             wall = room[idx]
             wall_direction = find_direction(room, idx)
-            rotation = change_orientation(asset_direction, wall_direction)
+            path, dim, wall_direction, rotation = get_asset_info(asset_path, dimension, room, idx)
 
             x, y = get_corner_asset_position(wall[0][0], wall[0][1], wall_direction, dim)
             points = [[x, y], [x, y+dim[1]], [x+dim[0], y], [x+dim[0], y+dim[1]]]
-            
             if isValidPoint(points, room, used_space):
-                place_asset(image, points[0], dim, rotation, used_space, asset)
+                place_asset(image, points[0], dim, rotation, used_space, path)
                 isPlaced = True
                 break
 
@@ -90,16 +89,14 @@ def kitchen_asset_placement(image, room, room_type, data, used_space):
         for idx, point in enumerate(center_points):
             wall = room[idx]
             wall_direction = find_direction(room, idx)
-            
-            rotation = change_orientation(asset_direction, wall_direction)
+            path, dim, wall_direction, rotation = get_asset_info(asset_path, dimension, room, idx)
 
             x, y = get_center_asset_position(point[0], point[1], wall_direction, dim)
             points = [[x, y], [x, y+dim[1]], [x+dim[0], y], [x+dim[0], y+dim[1]]]
-            
             if isValidPoint(points, room, used_space):
-                place_asset(image, points[0], dim, rotation, used_space, asset)
-                isPlaced = True
+                place_asset(image, points[0], dim, rotation, used_space, path)
                 break
+
 
 
 

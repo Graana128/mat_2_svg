@@ -142,24 +142,20 @@ def livingroom_asset_placement(image, room, data, room_to_doors, used_space):
     windows_indices = get_object_indices(room, data["windows"], isMultiple=True)
 
     for win_idx in windows_indices:
+        path, dim = assets[0], dimensions[0]
         window = data["windows"][win_idx]
         wall_index = get_wall_index(room, [window])
-        wall_direction = find_direction(room, wall_index)
-        bed_direction = directions["sofa.svg"]
-        rotation = change_orientation(bed_direction, wall_direction)
+        path, dim, wall_direction, rotation = get_asset_info(path, dim, room, wall_index)
 
         cx, cy = window[1:3]
-        dim = dimensions[0]
         x, y = get_sofa_position(cx, cy, wall_direction, dim)
 
         points = [[x, y], [x, y+dim[1]], [x+dim[0], y], [x+dim[0], y+dim[1]]]
         if isValidPoint(points, room, used_space):
-            place_asset(image, points[0], dim, rotation, used_space)
+            place_asset(image, points[0], dim, rotation, used_space, path)
             assets.pop(0)
             dimensions.pop(0)
             break
-
-        # what if above code not work?
 
     door_indices = get_object_indices(room, data["doors"], isMultiple=True)
     doors = [data["doors"][idx] for idx in door_indices]
@@ -168,21 +164,19 @@ def livingroom_asset_placement(image, room, data, room_to_doors, used_space):
     center_points = [[(wall[0][0]+wall[1][0])//2, (wall[0][1]+wall[1][1])//2] for wall in room]
     sorted_points = sort_corners(corner_points, doors)
 
-    for i, asset in enumerate(assets):
+    for i, asset_path in enumerate(assets):
         isPlaced = False
-        dim = dimensions[i]
-        asset_direction = directions[asset.split("/")[-1]]
+        dimension = dimensions[i]
 
         for idx, point in enumerate(center_points):
             wall = room[idx]
             wall_direction = find_direction(room, idx)
-            rotation = change_orientation(asset_direction, wall_direction)
-            
-            # rotation = 0
+            path, dim, wall_direction, rotation = get_asset_info(asset_path, dimension, room, idx)
+
             x, y = get_center_asset_position(point[0], point[1], wall_direction, dim)
             points = [[x, y], [x, y+dim[1]], [x+dim[0], y], [x+dim[0], y+dim[1]]]
             if isValidPoint(points, room, used_space):
-                place_asset(image, points[0], dim, rotation, used_space, asset)
+                place_asset(image, points[0], dim, rotation, used_space, path)
                 isPlaced = True
                 break
 
@@ -191,18 +185,16 @@ def livingroom_asset_placement(image, room, data, room_to_doors, used_space):
 
         for point in sorted_points.keys():
             idx = get_tuple_index(room, point)
+            
             wall = room[idx]
             wall_direction = find_direction(room, idx)
-            rotation = change_orientation(asset_direction, wall_direction)
+            path, dim, wall_direction, rotation = get_asset_info(asset_path, dimension, room, idx)
 
             x, y = get_corner_asset_position(wall[0][0], wall[0][1], wall_direction, dim)
-            points = [[x, y], [x, y+dim[1]], [x+dim[0], y], [x+dim[0], y+dim[1]]]
-            
+            points = [[x, y], [x, y+dim[1]], [x+dim[0], y], [x+dim[0], y+dim[1]]]  
             if isValidPoint(points, room, used_space):
-                place_asset(image, points[0], dim, rotation, used_space, asset)
-                isPlaced = True
+                place_asset(image, points[0], dim, rotation, used_space, path)
                 break
-
 
 
 
